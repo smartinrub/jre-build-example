@@ -1,0 +1,63 @@
+plugins {
+    id 'org.springframework.boot' version '2.6.2'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'application'
+    id "org.beryx.jlink" version "2.24.4" // https://badass-jlink-plugin.beryx.org/releases/latest/#user_guide
+}
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+application {
+    mainModule = 'com.sergiomartinrubio.jrebuildexample' // name defined in module-info.java
+    mainClass = 'com.sergiomartinrubio.jrebuildexample.App'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jlink {
+    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+
+    targetPlatform('linux-x64', '/Users/sergio/Downloads/jdk-17.0.1')
+    targetPlatform('linux-aarch64', '/Users/sergio/Downloads/jdk-aarch64-17.0.1 ')
+
+    launcher {
+        name = 'app'
+        jvmArgs = [
+                // com.sergiomartinrubio.jrebuildexample is defined in settings.gradle as rootProject.name
+                '--add-reads', 'com.sergiomartinrubio.jrebuildexample.merged.module=com.sergiomartinrubio.jrebuildexample',
+                '-cp', '../app/*',
+                '-Dlogback.configurationFile=./logback.xml'
+        ]
+    }
+    mergedModule {
+        additive = true
+        uses 'ch.qos.logback.classic.spi.Configurator'
+
+//        excludeRequires 'com.fasterxml.jackson.module.paramnames'
+//        excludeProvides implementation: 'com.sun.xml.bind.v2.ContextFactory'
+//        excludeProvides servicePattern: 'javax.enterprise.inject.*'
+        excludeProvides servicePattern: 'reactor.blockhound.integration.*'
+//        excludeProvides service: 'org.apache.logging.log4j.spi.Provider'
+    }
+    jpackage {
+        imageName = 'App'
+        skipInstaller = true
+        installerName = 'App'
+        installerType = 'pkg'
+    }
+    forceMerge('log4j-api', 'tomcat')
+}
