@@ -33,12 +33,14 @@ jlink {
 
     targetPlatform('linux-x64', '/Users/sergio/Downloads/jdk-17.0.1')
     targetPlatform('linux-aarch64', '/Users/sergio/Downloads/jdk-aarch64-17.0.1 ')
+//    targetPlatform('linux-x64', '/Users/sergio/Downloads/jdk-17.0.1')
+//    targetPlatform('linux-aarch64', '/Users/sergio/Downloads/jdk-aarch64-17.0.1 ')
 
     launcher {
         name = 'app'
         jvmArgs = [
                 // com.sergiomartinrubio.jrebuildexample is defined in settings.gradle as rootProject.name
-                '--add-reads', 'com.sergiomartinrubio.jrebuildexample.merged.module=com.sergiomartinrubio.jrebuildexample',
+                '--add-reads', 'jre.build.example.merged.module=com.sergiomartinrubio.jrebuildexample',
                 '-cp', '../app/*',
                 '-Dlogback.configurationFile=./logback.xml'
         ]
