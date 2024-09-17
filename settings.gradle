@@ -7,5 +7,15 @@
  * in the user manual at https://docs.gradle.org/7.3.3/userguide/multi_project_builds.html
  */
 
+plugins {
+    id "com.gradle.develocity" version "3.18.1"
+}
+
+develocity {
+    buildScan {
+        tag "backend-engineer"
+    }
+}
+
 rootProject.name = 'jre-build-example'
 include('app')
